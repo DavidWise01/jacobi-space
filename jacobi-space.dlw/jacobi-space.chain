@@ -1,0 +1,9 @@
+ROOT0-DLW-CHAIN-v1
+index : 1176
+slug  : jacobi-space
+seal  : a5944a5c77b78c2ea79529a7b72ad1aa05a148baba3a4ea7173c6586097342ba
+prev  : fcbc02b831cfa1c354e5a437e27caadf46bf10b741aa16fa499aa8db36798402
+link  : b800a0d1681f0ea72b05d82ee60571a9a9c80b0a1d890502542c247f15af7a4c
+head  : b800a0d1681f0ea72b05d82ee60571a9a9c80b0a1d890502542c247f15af7a4c
+
+— the tether: link = sha256(index|slug|seal|prev). the chain head commits to the whole corpus.
