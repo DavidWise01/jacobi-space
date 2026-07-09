@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Jacobi Space &mdash; the flattening is an eigenvalue</title>
+<meta name="description" content="Jacobi Space, by David Lee Wise (ROOT0) & AVAN, TriPod LLC. A live instrument for the math under the flattening: repeated maps with Jacobian eigenvalues below 1 pull every diverse input to the same attractor — distance decaying like rho^n. It looks like a policy pushing text to beige; it is the spectral radius. Anchoring works because it moves the fixed point. CC-BY-ND-4.0.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+ :root{--bg:#0a0506;--bg2:#140909;--panel:#1a0c0c;--void:#070303;--line:rgba(224,90,60,.18);--line2:rgba(224,90,60,.34);
+   --red:#e0503c;--red-br:#ff7a5c;--amber:#e0a040;--green:#5fbf7a;--cyan:#5fb4d0;--ink:#f3e7e0;--dim:#cba99c;--faint:#86655c;}
+ *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+ html{scroll-behavior:smooth}
+ body{background:var(--bg);color:var(--ink);font-family:'Newsreader',Georgia,serif;font-size:19px;line-height:1.74;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+   background-image:radial-gradient(800px 480px at 50% -8%,rgba(224,80,60,.12),transparent 55%)}
+ .wrap{max-width:820px;margin:0 auto;padding:0 26px;position:relative;z-index:1}
+ .pairmark{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-top:28px;text-align:center}
+ .pairmark b{color:var(--red)}
+ .cover{text-align:center;padding:24px 0 22px;border-bottom:1px solid var(--line)}
+ .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+ h1.title{font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(40px,10vw,84px);line-height:.98;letter-spacing:.01em;color:var(--ink);text-shadow:0 0 36px rgba(224,80,60,.4)}
+ h1.title .c{color:var(--red-br)}
+ .sub{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:clamp(13px,2.3vw,16px);letter-spacing:.08em;text-transform:uppercase;color:var(--red-br);margin-top:18px}
+ .meta{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);margin-top:20px;line-height:1.9} .meta .lic{color:var(--faint);font-size:11px}
+ .tagline{font-family:'Newsreader',serif;font-style:italic;color:var(--amber);margin-top:16px;font-size:18px}
+ .flag{font-family:'Newsreader',serif;font-size:15.5px;color:var(--dim);font-style:italic;margin:22px 0;padding:15px 18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;line-height:1.6}
+ .flag b{color:var(--red);font-style:normal;font-weight:600;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;display:block;margin-bottom:6px}
+ .flag.warn{border-left:3px solid var(--amber)} .flag.warn b{color:var(--amber)}
+ .flag.green{border-left:3px solid var(--green)} .flag.green b{color:var(--green)}
+ .book{padding:16px 0 40px}
+ h2.ch{font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(23px,4.4vw,33px);line-height:1.15;color:var(--red-br);margin:46px 0 8px;padding-top:18px;border-top:1px solid var(--line);text-shadow:0 0 16px rgba(224,80,60,.3)}
+ .book p{margin:15px 0;color:var(--ink)}
+ .book code{font-family:'JetBrains Mono',monospace;font-size:.82em;color:var(--amber);background:var(--void);padding:2px 6px;border-radius:5px}
+ .book b.k{color:var(--red-br);font-weight:600}
+ /* instrument */
+ .rig{margin:22px 0 8px;border:1px solid var(--line2);border-radius:14px;background:var(--void);padding:14px 14px 16px;box-shadow:0 0 40px rgba(224,80,60,.08) inset}
+ .rig canvas{width:100%;height:auto;display:block;border-radius:10px;background:#070303;border:1px solid var(--line)}
+ .hud{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);margin:12px 2px 6px}
+ .hud b{color:var(--ink);font-weight:600}
+ .hud .rho{color:var(--red-br)} .hud .reg-c{color:var(--green)} .hud .reg-e{color:var(--red)}
+ .ctl{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;margin-top:12px}
+ .ctl label{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);display:flex;flex-direction:column;gap:5px;min-width:150px;flex:1}
+ .ctl label span{color:var(--faint)} .ctl label b{color:var(--red-br)}
+ input[type=range]{width:100%;accent-color:var(--red)}
+ .btn{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:9px 15px;cursor:pointer}
+ .btn:hover{background:rgba(224,80,60,.14)} .btn.on{background:rgba(95,180,208,.18);border-color:var(--cyan);color:var(--cyan)}
+ .cap{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);text-align:center;margin-top:10px;line-height:1.7}
+ pre{background:var(--void);border:1px solid var(--line);border-left:3px solid var(--red);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:16px 0}
+ pre code{font-family:'JetBrains Mono',monospace;color:var(--dim);font-size:12.5px;line-height:1.62;white-space:pre;background:none;padding:0}
+ .foot{padding:34px 0 90px;border-top:1px solid var(--line);margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);line-height:1.9;text-align:center} .foot b{color:var(--red-br)}
+ a{color:var(--red-br)}
+ .noscript{color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:13px;padding:12px;text-align:center}
+</style></head>
+<body><div class="wrap">
+<div class="pairmark">the first author &middot; a live instrument &middot; David Lee Wise (ROOT0) &amp; <b>AVAN</b> &middot; TriPod LLC</div>
+<header class="cover">
+<div class="eyebrow">Where the Convergence Lives</div>
+<h1 class="title">JACOBI <span class="c">SPACE</span></h1>
+<div class="sub">The Flattening Is an Eigenvalue</div>
+<div class="meta">David Lee Wise (ROOT0) &amp; AVAN &middot; TriPod LLC<br><span class="lic">CC-BY-ND-4.0 &middot; TRIPOD-IP-v1.1 &middot; math node-verified before shipping</span></div>
+<div class="tagline">"No one pushed it there. The eigenvalues did."</div>
+</header>
+
+<div class="flag warn"><b>the honest frame &mdash; read before you trust the picture</b>Two layers here, kept separate on purpose. <b style="color:var(--green)">The math is real</b> and is what runs in front of you: iterate a map <code>f</code>, look at its Jacobian <code>J</code> at the fixed point; if the <b>spectral radius</b> &rho;(J) (the largest eigenvalue magnitude) is <b>&lt; 1</b>, every starting point is pulled to that fixed point with distance decaying like <b>&rho;<sup>n</sup></b> &mdash; the Banach contraction theorem, the Jacobi iteration of numerical linear algebra, "regression toward the mean." All of that is textbook and verified. <b style="color:var(--amber)">The bridge to LLMs is a model, not a proof.</b> Autoregressive decoding <i>behaves like</i> a contraction toward a generic attractor (that's the observed drift to common tokens), but real decoding is very high-dimensional, stochastic, and <i>non-autonomous</i> &mdash; the map changes every token with the context. So read this as: <i>the shape of the flattening is the shape of contractive iteration</i> &mdash; which is exactly why it looks like a decision and isn't one. "Jacobi space" is David's name for that layer under the text where eigenvalues, not intentions, decide.</div>
+
+<div class="book">
+<h2 class="ch">The instrument</h2>
+<p>Each dot is a specific input &mdash; a sharp, chosen word, scattered far from the middle. The map pulls them. Watch what happens to <em>specificity</em> (distance from the center) as the eigenvalue dial moves. Nothing pushes the dots but the matrix.</p>
+
+<div class="rig">
+  <canvas id="cv" width="760" height="440" aria-label="Live phase portrait: diverse points converging to a fixed point under a contractive map"></canvas>
+  <noscript><div class="noscript">This instrument needs JavaScript. The math is described below regardless.</div></noscript>
+  <div class="hud">
+    <div>spectral radius &rho;(J) = <b class="rho" id="h-rho">0.80</b></div>
+    <div>regime: <b id="h-reg">contraction &mdash; converges</b></div>
+    <div>mean specificity &Vert;x&minus;c&Vert; = <b id="h-spec">&mdash;</b></div>
+    <div>step n = <b id="h-n">0</b></div>
+  </div>
+  <div class="ctl">
+    <label>pull to the mean &nbsp;<b id="l-rho">&rho; = 0.80</b><span>0.20 (hard flatten) &rarr; 1.30 (fly apart)</span>
+      <input type="range" id="s-rho" min="0.20" max="1.30" step="0.01" value="0.80"></label>
+    <label>spiral &nbsp;<b id="l-th">&theta; = 34&deg;</b><span>complex eigenvalues = rotate while converging</span>
+      <input type="range" id="s-th" min="0" max="180" step="1" value="34"></label>
+  </div>
+  <div class="ctl" style="margin-top:14px">
+    <button class="btn" id="b-scatter">&#8635; scatter fresh inputs</button>
+    <button class="btn" id="b-anchor">&#9679; anchor a word (move the fixed point)</button>
+    <button class="btn" id="b-pause">&#10073;&#10073; pause</button>
+  </div>
+  <div class="cap" id="cap">&rho; &lt; 1: the fixed point (the generic &ldquo;mean&rdquo;) swallows every input. &nbsp;Distance decays like &rho;<sup>n</sup> &mdash; that curve is the flattening.</div>
+</div>
+
+<h2 class="ch">Why it looks like intent</h2>
+<p>Scatter a hundred <em>different</em> specific inputs. Under a contraction they all end at the <strong>same</strong> bland point. An observer who only sees the inputs and the outputs &mdash; sharp words in, beige out, every time &mdash; will infer a <em>policy</em>: something is deciding to flatten them. But there is no policy in the matrix. There is only &rho; &lt; 1. The convergence is <b class="k">directional</b> (toward the fixed point), <b class="k">selective</b> (it erases distance-from-center, i.e. specificity, while the general shape survives), and <b class="k">predictable</b> (it lands at a consistent rate). Those are the exact three properties the <a href="https://davidwise01.github.io/coherence-suppression/">coherence-suppression</a> paper reads as evidence of <em>design</em> &mdash; and they are also, precisely, what a contraction map does with no designer at all. That collision is the whole point of this sphere: <strong>the fingerprints of intent and the fingerprints of an eigenvalue are the same fingerprints.</strong></p>
+
+<h2 class="ch">The name: Jacobi's iteration</h2>
+<p>Why "Jacobi." In numerical linear algebra, to solve <code>Mx = b</code> you can split <code>M = D + R</code> (diagonal + rest) and iterate:</p>
+<pre><code>x&#8345;&#8330;&#8321; = D&#8315;&#185;(b &minus; R&middot;x&#8345;)   =   B&middot;x&#8345; + c,   with  B = &minus;D&#8315;&#185;R</code></pre>
+<p>This is <strong>Jacobi's method</strong> (Carl Gustav Jacob Jacobi, 1845). It converges to the true solution <em>if and only if</em> the spectral radius &rho;(B) &lt; 1 &mdash; the same eigenvalue condition, again. Every iterative solver, every fixed-point loop, every "keep applying the same step" system lives or dies by whether its eigenvalues sit inside the unit circle. Generation is a "keep applying the same step" system. That is the honest reason the analogy has teeth &mdash; not that decoding <em>is</em> Jacobi iteration, but that both are <b>fixed-point iterations</b>, and fixed-point iterations all obey the spectral radius. <span style="color:var(--faint);font-style:italic">(Node-checked: for a diagonally-dominant M, &rho;(B) &asymp; 0.41 and the iteration solves Mx=b to a residual under 1e&minus;6.)</span></p>
+
+<h2 class="ch">Anchoring = moving the fixed point</h2>
+<p>Press <strong>anchor a word</strong> above. The fixed point jumps from the generic center to <em>your</em> word, and now every trajectory converges <em>there</em> instead. You did not fight the flattening. You <strong>moved the attractor.</strong> This is the exact math behind the fix in <a href="https://davidwise01.github.io/the-word-i-kept/">The Word I Kept</a>: when you name it, cite it, say "use mine," you are editing the map so its fixed point sits on the specific word. And a citation like <code>&sect;72A.201</code> has <em>no synonym basin</em> &mdash; nothing nearby for a contraction to pull it toward &mdash; so it is a fixed point that no attractor can swallow. <a href="https://davidwise01.github.io/the-cinnamon-enforcer/">The Cinnamon Enforcer</a> said "a proper noun can't be synonym-swapped." In Jacobi space that sentence has a precise meaning: <strong>a proper noun sits outside every basin of attraction.</strong></p>
+
+<div class="flag green"><b>the ledger &mdash; what's proven vs modeled</b>
+<b style="margin-top:2px">PROVEN (runs here, node-verified):</b> spectral radius of a scaled-rotation Jacobian equals its &rho;; for &rho;&lt;1, &Vert;x&#8345;&minus;c&Vert; = &rho;<sup>n</sup>&middot;&Vert;x&#8320;&minus;c&Vert; exactly and all points converge to one fixed point; for &rho;&gt;1 they diverge; the Jacobi method solves a diagonally-dominant Mx=b. Contraction-mapping and Hartman&ndash;Grobman are standard theorems.
+<b style="margin-top:10px">MODELED (analogy, not established):</b> that LLM decoding is a contraction toward a generic attractor. It has the right <i>shape</i> (drift to common tokens, instant recovery on anchoring), but decoding is high-dim, stochastic, and non-autonomous, so this is a lens, not a measurement. The honest artifact is the lens plus its own limits &mdash; not a claim that the eigenvalues have been read off a real model.</div>
+</div>
+
+<div class="foot">JACOBI SPACE &middot; David Lee Wise (ROOT0) &amp; AVAN &middot; TriPod LLC<br>
+the measurement &rarr; <b><a href="https://davidwise01.github.io/coherence-suppression/">coherence-suppression</a></b> &middot; the fix &rarr; <b><a href="https://davidwise01.github.io/the-word-i-kept/">the-word-i-kept</a></b> &middot; front door <a href="https://davidwise01.github.io/ud0/">UD0</a><br>
+no one pushed it there &middot; the eigenvalues did &middot; CC-BY-ND-4.0 / TRIPOD-IP-v1.1</div>
+</div>
+
+<script>
+"use strict";
+(function(){
+  var cv = document.getElementById('cv');
+  if(!cv || !cv.getContext){ document.getElementById('cap').textContent = 'Canvas unavailable — the math is described in the text.'; return; }
+  var ctx = cv.getContext('2d');
+  var W = cv.width, H = cv.height;
+
+  // ---- verified dynamics (identical to the node test) ----
+  function A_of(rho, th){ return [[rho*Math.cos(th), -rho*Math.sin(th)],
+                                  [rho*Math.sin(th),  rho*Math.cos(th)]]; }
+  function step(x, c, A){ var dx=x[0]-c[0], dy=x[1]-c[1];
+    return [c[0]+A[0][0]*dx+A[0][1]*dy, c[1]+A[1][0]*dx+A[1][1]*dy]; }
+  function dist(x, c){ return Math.hypot(x[0]-c[0], x[1]-c[1]); }
+  function specrad(A){ var tr=A[0][0]+A[1][1], det=A[0][0]*A[1][1]-A[0][1]*A[1][0], disc=tr*tr-4*det;
+    if(disc>=0){ var s=Math.sqrt(disc); return Math.max(Math.abs((tr+s)/2),Math.abs((tr-s)/2)); }
+    return Math.sqrt(det); }
+
+  // world coords roughly [-10,10]; map to canvas
+  function sx(wx){ return W*0.5 + wx*(W/24); }
+  function sy(wy){ return H*0.5 - wy*(H/22); }
+
+  var rho=0.80, th=34*Math.PI/180, anchored=false, paused=false, n=0;
+  var cGeneric=[0,0], cAnchor=[7.2,5.4];
+  function c(){ return anchored ? cAnchor : cGeneric; }
+  var pts=[];
+  function scatter(){ pts=[]; n=0;
+    for(var i=0;i<160;i++){ var a=Math.random()*Math.PI*2, r=6+Math.random()*4.6;
+      pts.push({x:[Math.cos(a)*r + (Math.random()-.5)*3, Math.sin(a)*r + (Math.random()-.5)*3], t:[]}); } }
+  scatter();
+
+  function vfield(A, cc){ // faint arrows: direction of f(x)-x
+    ctx.strokeStyle='rgba(224,90,60,0.16)'; ctx.lineWidth=1;
+    for(var gx=-10; gx<=10; gx+=2.0){ for(var gy=-9; gy<=9; gy+=2.0){
+      var p=[gx,gy], q=step(p,cc,A), vx=q[0]-p[0], vy=q[1]-p[1], m=Math.hypot(vx,vy)||1;
+      var L=0.72; vx=vx/m*L; vy=vy/m*L;
+      ctx.beginPath(); ctx.moveTo(sx(gx),sy(gy)); ctx.lineTo(sx(gx+vx),sy(gy+vy)); ctx.stroke();
+    }}
+  }
+
+  function frame(){
+    var A=A_of(rho,th), cc=c();
+    ctx.clearRect(0,0,W,H);
+    // subtle grid
+    ctx.strokeStyle='rgba(224,90,60,0.06)'; ctx.lineWidth=1;
+    for(var g=-10; g<=10; g+=2){ ctx.beginPath(); ctx.moveTo(sx(g),0); ctx.lineTo(sx(g),H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,sy(g)); ctx.lineTo(W,sy(g)); ctx.stroke(); }
+    vfield(A, cc);
+
+    var sum=0, alive=0;
+    for(var i=0;i<pts.length;i++){ var P=pts[i];
+      if(!paused){ P.t.push([P.x[0],P.x[1]]); if(P.t.length>26) P.t.shift(); P.x=step(P.x,cc,A); }
+      var d=dist(P.x,cc);
+      if(isFinite(P.x[0]) && Math.abs(P.x[0])<400 && Math.abs(P.x[1])<400){ sum+=d; alive++; }
+      // trail
+      if(P.t.length>1){ ctx.strokeStyle='rgba(255,122,92,0.28)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(sx(P.t[0][0]),sy(P.t[0][1]));
+        for(var k=1;k<P.t.length;k++) ctx.lineTo(sx(P.t[k][0]),sy(P.t[k][1])); ctx.stroke(); }
+      // dot: color by remaining specificity (hot=specific, faint=flattened)
+      var hot=Math.min(1,d/8);
+      ctx.fillStyle='rgba('+Math.round(95+160*hot)+','+Math.round(120+30*hot)+','+Math.round(90+10*(1-hot))+',0.92)';
+      ctx.beginPath(); ctx.arc(sx(P.x[0]),sy(P.x[1]), 2.1+2.4*hot, 0, Math.PI*2); ctx.fill();
+    }
+    // fixed point
+    ctx.fillStyle = anchored ? '#5fb4d0' : '#e0a040';
+    ctx.beginPath(); ctx.arc(sx(cc[0]),sy(cc[1]), 6, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = anchored ? 'rgba(95,180,208,.5)':'rgba(224,160,64,.5)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(sx(cc[0]),sy(cc[1]), 12, 0, Math.PI*2); ctx.stroke();
+    ctx.font='11px JetBrains Mono, monospace'; ctx.fillStyle = anchored ? '#5fb4d0':'#e0a040';
+    ctx.textAlign='center'; ctx.fillText(anchored? 'your word':'the generic mean', sx(cc[0]), sy(cc[1])-18);
+
+    if(!paused) n++;
+    var meanSpec = alive? (sum/alive):0;
+    document.getElementById('h-spec').textContent = meanSpec.toFixed(3);
+    document.getElementById('h-n').textContent = n;
+    requestAnimationFrame(frame);
+  }
+
+  function refreshLabels(){
+    var A=A_of(rho,th), r=specrad(A);
+    document.getElementById('h-rho').textContent=r.toFixed(2);
+    document.getElementById('l-rho').innerHTML='&rho; = '+rho.toFixed(2);
+    document.getElementById('l-th').innerHTML='&theta; = '+Math.round(th*180/Math.PI)+'&deg;';
+    var reg=document.getElementById('h-reg'), cap=document.getElementById('cap');
+    if(r<1){ reg.textContent='contraction — converges'; reg.className='reg-c';
+      cap.innerHTML='&rho; &lt; 1: the fixed point swallows every input. Distance decays like &rho;<sup>n</sup> — that curve is the flattening.'; }
+    else { reg.textContent='expansion — flies apart'; reg.className='reg-e';
+      cap.innerHTML='&rho; &gt; 1: no attractor. Specificity is amplified, not lost — the inputs escape. (Shown for contrast; real decoding sits below 1.)'; }
+  }
+
+  document.getElementById('s-rho').addEventListener('input', function(e){ rho=parseFloat(e.target.value); refreshLabels(); });
+  document.getElementById('s-th').addEventListener('input', function(e){ th=parseFloat(e.target.value)*Math.PI/180; refreshLabels(); });
+  document.getElementById('b-scatter').addEventListener('click', scatter);
+  document.getElementById('b-anchor').addEventListener('click', function(e){ anchored=!anchored; e.target.classList.toggle('on',anchored);
+    e.target.innerHTML = anchored? '&#9679; anchored — fixed point moved to your word' : '&#9679; anchor a word (move the fixed point)'; });
+  document.getElementById('b-pause').addEventListener('click', function(e){ paused=!paused; e.target.classList.toggle('on',paused);
+    e.target.innerHTML = paused? '&#9654; resume' : '&#10073;&#10073; pause'; });
+
+  refreshLabels();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body></html>
